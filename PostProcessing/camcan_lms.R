@@ -7,7 +7,7 @@ library(scico)
 library(MASS)
 library(sfsmisc)
 
-setwd("~/GitHub/yesweCanCAM")
+setwd("~/GitHub/GradientDispersion/")
 
 # load some data for linear models (includes dispersion and within connectivity for each Yeo network
 # + clustering and pathlength) 
@@ -25,14 +25,16 @@ m7 <- rlm(age ~ Visual + Visual_w + motion + sex, data = df.corr)
 models <- list(m1, m2, m3, m4, m5, m6, m7)
 
 # extract the relevant stats
-F <- p <- t <- numeric()
+F <- p <- t <- b <- se <- numeric()
 for (m in 1:7){
+  b[[m]] <- summary(models[[m]])$coefficient[2,1]
+  se[[m]] <- summary(models[[m]])$coefficient[2,2]
   F[[m]] <- f.robftest(models[[m]], var = 2)$statistic[[1]]
   p[[m]] <- f.robftest(models[[m]], var = 2)$p.value
   t[[m]] <- as.data.frame(summary(models[[m]])$coefficients)$`t value`[2]
 }
 
-output <- as.data.frame(cbind(F,p,t))
+output <- as.data.frame(cbind(F,p,t,b,se))
 output$model <- as.factor(c("DMN","FrontoParietal","Sensory.Motor","DAN","VAN","Limbic","Visual"))
 output$pFDR <- p.adjust(output$p, method = "fdr")
 
