@@ -390,7 +390,7 @@ for f2_analysis = 1
 
 
         T = table(age, sex, motion, yeo_cog(:,1,n), yeo_cog(:,2,n), yeo_cog(:,3,n), ...
-            yeo_cog_dist(:,n), 1./yeo_netSSD(:,n), 'VariableNames', ...
+            yeo_cog_dist(:,n), yeo_netSSD(:,n), 'VariableNames', ...
             {'age', 'sex', 'motion', 'g1', 'g2', 'g3', 'dist', 'disp'});
         mdl = fitlm(T, 'g1 ~ age + motion + sex');
         for c = 1:4
@@ -477,7 +477,7 @@ for f2_statistics = 1
           end
           perm_yeo_netSSD(s,n) = sumsqr(dist_to_centre);
         end
-        T = table(age, sex, motion, 1./perm_yeo_netSSD(:,n), ...
+        T = table(age, sex, motion, perm_yeo_netSSD(:,n), ...
         'VariableNames', {'age', 'sex', 'motion', 'disp'});
         mdl = fitlm(T, 'disp ~ age + motion + sex');
         perm_yeo_disp(p,n) = table2array(mdl.Coefficients(2,3));
@@ -697,7 +697,7 @@ for n = 1:7
     % connectivity to yeo
     sub_yeo_corr(:,:,n) = squeeze(median(sub_corr(netNodes,:,:)))'; % subject rows, subcortical as columns
     for ii = 1:subcortex_num
-        T = table(age, sex, motion, sub_yeo_corr(:,ii,n), 1./yeo_netSSD(:,n), ...
+        T = table(age, sex, motion, sub_yeo_corr(:,ii,n), yeo_netSSD(:,n), ...
             'VariableNames', {'age', 'sex', 'motion', 'sub_yeo_corr', 'disp'});
         % a - age to mediator
         mdl = fitlm(T, 'sub_yeo_corr ~ age + motion + sex');
@@ -750,7 +750,7 @@ for f3_visualisation = 1
     Motion = term(motion);
     subcort = sub_yeo_corr(:,ii,n);
     Subcort = term(subcort);
-    yeo_ssd = 1./yeo_netSSD(:,n);
+    yeo_ssd = yeo_netSSD(:,n);
 
     % path a
     a(1) = axes('position', [0.1 0.3 0.2 0.2]);
